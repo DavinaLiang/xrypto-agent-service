@@ -1,0 +1,20 @@
+name: Sync to Hugging Face
+on:
+  push:
+    branches: [main]  # 只要你往 main 分支推代码，它就干活
+  workflow_dispatch:   # 允许你手动点按钮触发
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # 这一行是核心：把代码推送到 HF
+          git push -f https://Gabi97:$HF_TOKEN@huggingface.co/spaces/Gabi97/xrypto-agent-service main
