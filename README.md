@@ -1,4 +1,14 @@
-# MicroFund Agent Service
+---
+title: Xrytofund
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker  # 选项有: gradio, streamlit, docker, static
+sdk_version: 5.0.0 # 建议写你本地用的版本，不确定就写这个最新的
+app_file: app.py  
+pinned: false
+---
+# Xrytofund Agent Service
 
 独立的项目计划生成服务，运行在 HF Spaces，为主后端 (Render) 提供 AI 生成的项目计划。
 
