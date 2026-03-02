@@ -1,0 +1,24 @@
+# Agent Service 专用依赖（极简版）
+# 只含必要的包，不包含数据库、认证等
+
+# 核心框架
+fastapi
+uvicorn
+pydantic
+
+# AI/Agent 相关
+crewai
+crewai_tools
+langchain
+langchain-core
+langchain-openai
+litellm
+
+# 工具类
+python-dotenv
+requests
+
+# 通用
+python-multipart
+Jinja2
+PyYAML

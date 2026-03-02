@@ -1,0 +1,64 @@
+synthesize_monthly_proposal:
+  description: >
+    Using the provided {aggregation} (monthly comment window) and optional {project_context},
+    produce EXACTLY ONE concrete proposal of type "monthly_top_idea" grounded strictly in comments.
+    Include: a concise title, a short summary paragraph, concrete actionable details (plan),
+    and a list of source_comment_ids used. Do not output any other proposal types.
+  agent: comment_aggregator_agent
+  expected_output: >
+    Your final answer MUST strictly adhere to the required Pydantic output model structure (MonthlyProposalAuto).
+  async_execution: false
+  max_retries: 1
+  approximate_tokens: 800
+
+# Optional: keep for future analytics (not used by the monthly flow directly)
+aggregate_top_ideas:
+  description: >-
+    Using the provided {aggregation} (comment batch) and optional {project_context},
+    analyze and rank the top community ideas. Return a list of high-signal ideas
+    with confidence, summarized text, and source comment IDs. Keep it concise and deduplicated.
+  agent: comment_aggregator_agent
+  expected_output: >
+    Your final answer MUST strictly adhere to the required Pydantic output model structure (TopIdeas).
+  async_execution: false
+  max_retries: 1
+  approximate_tokens: 1000
+
+classify_input:
+  description: >
+    Analyze the {user_input}. You must first use your FileReadTool to retrieve the official classification rules.
+    Based on the retrieved rules, classify the input into one of the allowed proposal types or as a free_comment.
+  expected_output: >
+    Your final answer MUST strictly adhere to the required Pydantic output model structure.
+  agent: proposal_agent
+
+generate_update_drafts:
+  description: >
+    Based on the identified {proposal_type}, the user's raw input ({user_input}), and the provided {project_context}
+    (a JSON snapshot of existing milestones or funding_plan), produce suggestions to PATCH existing records.
+
+    === GROUNDING RULES FOR PATCHES ===
+    1. PRIORITIZE user_input — every suggested patch MUST directly address content or intent from user_input.
+    2. If user references a specific record by id or name (e.g. "Milestone 3", "stage 2"), use that record's id from project_context.
+    3. If user describes a change but does NOT identify which record, return empty drafts and set explanation to clarify.
+    4. Each suggestion must only reference whitelisted fields (milestones: description, expected_duration_months; funding_plan: tokens_allocated, unlock_condition).
+
+  expected_output: >
+    Your final answer MUST strictly adhere to the required Pydantic output model structure (ProposalDrafts).
+  agent: proposal_writer_agent
+
+generate_addition_drafts:
+  description: >
+    Based on the identified {proposal_type}, the user's raw input ({user_input}), and the provided {project_context},
+    produce suggestions for NEW records (milestones or funding stages).
+
+    === GROUNDING RULES FOR ADDITIONS ===
+    1. Use project_context (existing milestones, project duration, funding info) to understand the current plan.
+    2. Propose a new record that fits logically into the timeline/budget and does NOT duplicate existing items.
+    3. For milestones: expected_duration_months must be realistic (1-60).
+    4. For funding: tokens_allocated should not cause total to exceed project target funding.
+    5. rationale MUST explain how this relates to the user's input.
+
+  expected_output: >
+    Your final answer MUST strictly adhere to the required Pydantic output model structure (ProposalAdditions).
+  agent: proposal_writer_agent

@@ -1,0 +1,20 @@
+generate_milestones:
+  description: >
+    Generate a milestone plan for a {project_domain} project based on the {project_description}
+    The project lasts {project_duration} with a team of {team_size} people.
+    Each milestone should have a name, duration, deliverables and success criteria.
+  expected_output: >
+    Output MUST be a single JSON object exactly in the shape defined by the pydantic model.
+    Do NOT output anything outside the JSON object.
+  agent: project_planner
+
+generate_funding_plan:
+  description: >
+    Analyze the project information and funding goal: {target_funding_amount} (in native token units),
+    then design a token-based funding plan according to the project milestones from the last task. 
+    The plan should include multiple funding stages (e.g., seed, private, public),
+    each with clear token allocation amount, release conditions, and milestone links.
+  expected_output: >
+    Output MUST be a single JSON object exactly in the shape defined by the pydantic model.
+    Do NOT output anything outside the JSON object.
+  agent: funding_strategist

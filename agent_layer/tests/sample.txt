@@ -1,0 +1,20 @@
+{
+        "project_name": "GreenChain",
+        "project_description": "A Web3 platform enabling carbon credit tokenization and trading.",
+        "project_domain": "Environmental DeFi",
+        "project_duration": "3 months",
+        "team_size": 3 ,
+        "target_funding_amount": 10000
+    }
+
+{
+  "name": "GreenChain",
+  "description": "A Web3 platform enabling carbon credit tokenization and trading.",
+  "funding_goal": 10000
+}
+
+{
+  "name": "Test2",
+  "description": "This is a test",
+  "funding_goal": 10000
+}
