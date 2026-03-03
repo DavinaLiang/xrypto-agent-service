@@ -24,6 +24,10 @@ class PlanInput(BaseModel):
     project_duration: str
     team_size: int
     target_funding_amount: float
+    
+    # 允许自动类型转换
+    class Config:
+        coerce_numbers_to_str = False
 
 app = FastAPI(
     title="MicroFund Agent Service",
