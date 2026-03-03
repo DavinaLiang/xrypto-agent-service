@@ -25,9 +25,9 @@ class PlanInput(BaseModel):
     team_size: int
     target_funding_amount: float
     
-    # 允许自动类型转换
     class Config:
-        coerce_numbers_to_str = False
+        # 允许额外字段，避免 422 错误
+        extra = "ignore"
 
 app = FastAPI(
     title="MicroFund Agent Service",
