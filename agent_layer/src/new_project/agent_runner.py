@@ -59,11 +59,19 @@ def run(inputs: dict):
                     print(f"[AGENT][PARSE_ERROR] Failed to parse {label} as JSON: {e}. Raw=", text[:500])
                     return None
 
-            raw_milestones = getattr(milestones_output, "raw", None) or getattr(milestones_output, "value", None) or getattr(milestones_output, "text", None)
-            raw_funding = getattr(funding_output, "raw", None) or getattr(funding_output, "value", None) or getattr(funding_output, "text", None)
+            raw_milestones = getattr(milestones_output, "raw", None) or getattr(milestones_output, "value", None) or getattr(milestones_output, "text", None) or str(milestones_output)
+            raw_funding = getattr(funding_output, "raw", None) or getattr(funding_output, "value", None) or getattr(funding_output, "text", None) or str(funding_output)
 
-            milestones = _extract_json(raw_milestones, "milestones")
-            funding_plan = _extract_json(raw_funding, "funding_plan")
+            print(f"[AGENT][RAW_MILESTONES] {raw_milestones[:300] if raw_milestones else 'None'}")
+            print(f"[AGENT][RAW_FUNDING] {raw_funding[:300] if raw_funding else 'None'}")
+
+            if milestones is None:
+                milestones = _extract_json(raw_milestones, "milestones")
+            if funding_plan is None:
+                funding_plan = _extract_json(raw_funding, "funding_plan")
+        
+        print(f"[AGENT][MILESTONES_RESULT] {milestones}")
+        print(f"[AGENT][FUNDING_PLAN_RESULT] {funding_plan}")
         
         return {"status": "success", "milestones": milestones, "funding_plan": funding_plan}
     except Exception as e:
