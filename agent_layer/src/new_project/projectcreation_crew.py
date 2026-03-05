@@ -78,10 +78,7 @@ class NewProject():
     def generate_milestones(self) -> Task:
         return Task(
             config=self.tasks_config['generate_milestones'],
-            # NOTE: 之前这里使用 output_pydantic=MilestonePlan，会触发 CrewAI 使用
-            # response_format 进行结构化输出，DeepSeek 当前版本已不再支持该类型，
-            # 因此暂时注释掉，改为在服务层手动解析 JSON 文本。
-            # output_pydantic=MilestonePlan
+            output_pydantic=MilestonePlan
         )
 
     @task
@@ -89,8 +86,7 @@ class NewProject():
         return Task(
             config=self.tasks_config['generate_funding_plan'],
             context=[self.generate_milestones()],
-            # 同上，暂时不用 Pydantic 自动结构化，避免 DeepSeek 400 错误。
-            # output_pydantic=FundingPlan
+            output_pydantic=FundingPlan
         )
 
     @crew

@@ -35,46 +35,31 @@ def run(inputs: dict):
         milestones_output = crew_instance.tasks[0].output
         funding_output = crew_instance.tasks[1].output
 
-        # 优先使用旧的 pydantic 输出（如果未来重新启用 output_pydantic 仍可复用）
+        # 直接获取 Pydantic 对象（因为已启用 output_pydantic）
         milestones = getattr(milestones_output, "pydantic", None)
         funding_plan = getattr(funding_output, "pydantic", None)
 
-        # DeepSeek 当前不支持 response_format，output_pydantic 已被注释，
-        # 因此这里增加对原始文本输出的 JSON 解析兜底逻辑。
-        if milestones is None or funding_plan is None:
-            import json
-
-            def _extract_json(raw_value, label: str):
-                if raw_value is None:
-                    return None
-                text = str(raw_value)
-                # 尝试截取第一个 {...} 作为 JSON 片段
-                start = text.find("{")
-                end = text.rfind("}")
-                if start != -1 and end != -1 and end > start:
-                    text = text[start:end+1]
-                try:
-                    return json.loads(text)
-                except Exception as e:
-                    print(f"[AGENT][PARSE_ERROR] Failed to parse {label} as JSON: {e}. Raw=", text[:500])
-                    return None
-
-            raw_milestones = getattr(milestones_output, "raw", None) or getattr(milestones_output, "value", None) or getattr(milestones_output, "text", None) or str(milestones_output)
-            raw_funding = getattr(funding_output, "raw", None) or getattr(funding_output, "value", None) or getattr(funding_output, "text", None) or str(funding_output)
-
-            print(f"[AGENT][RAW_MILESTONES] {raw_milestones[:300] if raw_milestones else 'None'}")
-            print(f"[AGENT][RAW_FUNDING] {raw_funding[:300] if raw_funding else 'None'}")
-
-            if milestones is None:
-                milestones = _extract_json(raw_milestones, "milestones")
-            if funding_plan is None:
-                funding_plan = _extract_json(raw_funding, "funding_plan")
-        
         print(f"[AGENT][MILESTONES_RESULT] {milestones}")
         print(f"[AGENT][FUNDING_PLAN_RESULT] {funding_plan}")
         
-        return {"status": "success", "milestones": milestones, "funding_plan": funding_plan}
+        if milestones is None:
+            print(f"[AGENT][WARNING] Milestones Pydantic is None, raw output: {str(milestones_output)[:500]}")
+        if funding_plan is None:
+            print(f"[AGENT][WARNING] Funding Plan Pydantic is None, raw output: {str(funding_output)[:500]}")
+        
+        # 将 Pydantic 对象转换为字典（方便序列化）
+        result = {
+            "status": "success",
+            "milestones": milestones.model_dump() if milestones else None,
+            "funding_plan": funding_plan.model_dump() if funding_plan else None
+        }
+        
+        print(f"[AGENT][RESULT] {result}")
+        return result
     except Exception as e:
+        import traceback
+        print(f"[AGENT][ERROR] {str(e)}")
+        traceback.print_exc()
         return {"status": "error", "message": str(e)}
         
 if __name__ == "__main__":

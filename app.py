@@ -137,4 +137,12 @@ if __name__ == "__main__":
     import uvicorn
     # HF Spaces 会自动设置 PORT 环境变量，默认 7860
     port = int(os.getenv("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+    # 增加 timeout 到 120 秒，给 DeepSeek API 足够时间响应
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=port, 
+        log_level="info",
+        timeout_keep_alive=120,  # 保持连接的超时
+        timeout_notify=120,  # 优雅关闭通知超时
+    )
