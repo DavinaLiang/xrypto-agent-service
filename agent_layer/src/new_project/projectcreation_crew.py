@@ -58,7 +58,8 @@ class NewProject():
         return Agent(
             config=self.agents_config['project_planner'], # type: ignore[index]
             llm=deepseek_llm,
-            verbose=True
+            verbose=True,
+            max_iter=1,
         )
 
     @agent
@@ -66,7 +67,8 @@ class NewProject():
         return Agent(
             config=self.agents_config['funding_strategist'], # type: ignore[index]
             llm=deepseek_llm,
-            verbose=True
+            verbose=True,
+            max_iter=1,
         )
 
     # To learn more about structured task outputs,
@@ -86,7 +88,7 @@ class NewProject():
     def generate_funding_plan(self) -> Task:
         return Task(
             config=self.tasks_config['generate_funding_plan'],
-            #context=[self.generate_milestones],
+            context=[self.generate_milestones()],
             # 同上，暂时不用 Pydantic 自动结构化，避免 DeepSeek 400 错误。
             # output_pydantic=FundingPlan
         )
