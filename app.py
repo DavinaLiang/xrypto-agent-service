@@ -144,5 +144,4 @@ if __name__ == "__main__":
         port=port, 
         log_level="info",
         timeout_keep_alive=120,  # 保持连接的超时
-        timeout_notify=120,  # 优雅关闭通知超时
     )
